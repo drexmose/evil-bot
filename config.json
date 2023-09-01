@@ -13,6 +13,6 @@
    "evaluate_chars":  ["=>", "~>", "<", ">", "$"],
    "pairing": {
       "state": true,
-      "number": 254706069585
+      "number": 
    }
 }
