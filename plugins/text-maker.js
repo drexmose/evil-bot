@@ -10,7 +10,7 @@ exports.run = {
       Func
    }) => {
       try {
-         if (!text) return client.reply(m.chat, Func.example(isPrefix, command, 'evil bot'), m)
+         if (!text) return client.reply(m.chat, Func.example(isPrefix, command, 'neoxr bot'), m)
          if (text.length > 10) return client.reply(m.chat, Func.texted('bold', `🚩 Text is too long max 10 characters.`), m)
          let old = new Date()
          await client.sendReact(m.chat, '🕒', m.key)
