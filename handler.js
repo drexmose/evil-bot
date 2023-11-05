@@ -20,7 +20,7 @@ module.exports = async (client, ctx) => {
          chats = global.db.chats.find(v => v.jid == m.chat),
          users = global.db.users.find(v => v.jid == m.sender),
          setting = global.db.setting
-      Logs(client, m, false)
+      Logs(client, m, false) /* 1 = print all message, 0 = print only cmd message */
       if (!setting.online) client.sendPresenceUpdate('unavailable', m.chat)
       if (setting.online) {
          client.sendPresenceUpdate('available', m.chat)
@@ -29,7 +29,7 @@ module.exports = async (client, ctx) => {
       if (m.isGroup && !isBotAdmin) {
          groupSet.localonly = false
       }
-      if (!users) return global.db.users.push({
+      if (!users) global.db.users.push({
          jid: m.sender,
          banned: false,
          limit: env.limit,
@@ -69,7 +69,7 @@ module.exports = async (client, ctx) => {
          Object.entries(global.db.statistic).map(([_, prop]) => prop.today = 0)
       }, {
          scheduled: true,
-         timezone: 'Africa/Nairobi'
+         timezone: process.env.TZ
       })
       if (m.isGroup && !m.fromMe) {
          let now = new Date() * 1
@@ -200,7 +200,7 @@ module.exports = async (client, ctx) => {
    } catch (e) {
       if (/(undefined|overlimit|timed|timeout|users|item|time)/ig.test(e.message)) return
       console.log(e)
-      if (!m.fromMe) return m.reply(Func.jsonFormat(new Error('genius-bot encountered an error :' + e)))
+      if (!m.fromMe) return m.reply(Func.jsonFormat(new Error('evil-bot encountered an error :' + e)))
    }
    Func.reload(require.resolve(__filename))
 }

@@ -1,14 +1,14 @@
 {
-   "name":"spike-bot",
+   "name":"evil-bot",
    "version":"4.0-rc",
    "description":"WhatsApp Bot (Base)",
    "main":"index.js",
-   "scripts":{
-      "test":"echo \"Error: no test specified\" && exit 1"
+   "scripts": {
+      "start": "node ."
    },
    "repository":{
       "type":"git",
-      "url":"git+https://github.com/mohalicious/moon-bot.git"
+      "url":"git+https://github.com/mohalicious/evil-bot.git"
    },
    "keywords":[
       "wb",
@@ -17,18 +17,19 @@
    "author":"Mohamed",
    "license":"ISC",
    "bugs":{
-      "url":"https://github.com/mohalicious/moon-bot/issues"
+      "url":"https://github.com/mohalicious/evil-bot/issues"
    },
-   "homepage":"https://github.com/mohalicious/moon-bot#readme",
+   "homepage":"https://github.com/mohalicious/evil-bot#readme",
    "dependencies":{
       "@adiwajshing/baileys":"npm:@whiskeysockets/baileys",
       "@adiwajshing/keyed-db":"^0.2.4",
       "@colors/colors": "^1.6.0",
-      "@neoxr/wb": "^1.17.20",
+      "@neoxr/wb": "^1.20.28",
       "axios": "^1.3.6",
       "bytes": "^3.1.2",
       "cheerio": "^1.0.0-rc.12",
-      "cfonts": "3.1.1",
+      "bytes": "^3.1.2",
+      "express": "~4.16.4",
       "json-stable-stringify": "^1.0.2",
       "node-cron": "^3.0.0",
       "node-gtts": "^2.0.2",

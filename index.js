@@ -1,6 +1,5 @@
-require('dotenv').config(), require('rootpath')() // require('./server')
+require('dotenv').config(), require('rootpath')(), require('./server')
 const { spawn: spawn } = require('child_process'), path = require('path'), colors = require('@colors/colors/safe'), CFonts = require('cfonts')
-process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
 
 const unhandledRejections = new Map()
 process.on('unhandledRejection', (reason, promise) => {
@@ -30,11 +29,11 @@ function start() {
 	})
 }
 
-CFonts.say('SPIKE BOT', {
+CFonts.say('EVIL BOT', {
    font: 'tiny',
    align: 'center',
    colors: ['system']
-}), CFonts.say('Github : https://github.com/mohalicious/moon-bot', {
+}), CFonts.say('Github : https://github.com/mohalicious/evil-bot', {
    colors: ['system'],
    font: 'console',
    align: 'center'

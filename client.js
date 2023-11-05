@@ -1,4 +1,5 @@
 "use strict";
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
 require('events').EventEmitter.defaultMaxListeners = 500
 const { Baileys, MongoDB, PostgreSQL, Scandir, Function: Func } = new(require('@neoxr/wb'))
 const spinnies = new(require('spinnies'))(),
@@ -21,16 +22,22 @@ const client = new Baileys({
 })
 
 /* starting to connect */
-client.on('connect', async () => {
+client.on('connect', async res => {
    /* load database */
    global.db = {users:[], chats:[], groups:[], statistic:{}, sticker:{}, setting:{}, ...(await machine.fetch() ||{})}
    
    /* save database */
    await machine.save(global.db)
+
+   /* write connection log */
+   if (res && typeof res === 'object' && res.message) Func.logFile(res.message)
 })
 
 /* print error */
-client.on('error', async error => console.log(colors.red(error.message)))
+client.on('error', async error => {
+   console.log(colors.red(error.message))
+   if (error && typeof error === 'object' && error.message) Func.logFile(error.message)
+})
 
 /* bot is connected */
 client.on('ready', async () => {
@@ -42,24 +49,35 @@ client.on('ready', async () => {
          process.send('reset')
       }
    }, 60 * 1000)
-   
+
    /* create temp directory if doesn't exists */
    if (!fs.existsSync('./temp')) fs.mkdirSync('./temp')
-   
+
    /* require all additional functions */
-   require('./lib/system/config'), require('./lib/system/baileys'), require('./lib/system/functions'), require('./lib/system/scraper')
+   require('./lib/system/config'), require('./lib/system/baileys')(client.sock), require('./lib/system/functions'), require('./lib/system/scraper')
 
-   /* clear temp folder every 3 minutes */
+   /* clear temp folder every 10 minutes */
    setInterval(() => {
-      const tmpFiles = fs.readdirSync('./temp')
-      if (tmpFiles.length > 0) {
-         tmpFiles.filter(v => !v.endsWith('.file')).map(v => fs.unlinkSync('./temp/' + v))
-      }
-   }, 60 * 1000 * 3)
+      try {
+         const tmpFiles = fs.readdirSync('./temp')
+         if (tmpFiles.length > 0) {
+            tmpFiles.filter(v => !v.endsWith('.file')).map(v => fs.unlinkSync('./temp/' + v))
+         }
+      } catch {}
+   }, 60 * 1000 * 10)
 
-   /* save database every 30 seconds */
+   /* save database send http-request every 30 seconds */
    setInterval(async () => {
       if (global.db) await machine.save(global.db)
+      if (process.env.CLOVYR_APPNAME && process.env.CLOVYR_URL && process.env.CLOVYR_COOKIE) {
+         const response = await axios.get(process.env.CLOVYR_URL, {
+            headers: {
+               referer: 'https://clovyr.app/view/' + process.env.CLOVYR_APPNAME,
+               cookie: process.env.CLOVYR_COOKIE
+            }
+         })
+         Func.logFile(`${await response.status} - Application wake-up!`)
+      }
    }, 30_000)
 })
 
@@ -83,7 +101,7 @@ client.on('presence.update', update => {
    if (id.endsWith('g.us')) {
       for (let jid in presences) {
          if (!presences[jid] || jid == sock.decodeJid(sock.user.id)) continue
-         if ((presences[jid].lastKnownPresence === 'composing' || presences[jid].lastKnownPresence === 'recording') && global.db.users.find(v => v.jid == jid) && global.db.users.find(v => v.jid == jid).afk > -1) {
+         if ((presences[jid].lastKnownPresence === 'recording' || presences[jid].lastKnownPresence === 'recording') && global.db.users.find(v => v.jid == jid) && global.db.users.find(v => v.jid == jid).afk > -1) {
             sock.reply(id, `System detects activity from @${jid.replace(/@.+/, '')} after being offline for : ${Func.texted('bold', Func.toTime(new Date - global.db.users.find(v => v.jid == jid).afk))}\n\n➠ ${Func.texted('bold', 'Reason')} : ${global.db.users.find(v => v.jid == jid).afkReason ? global.db.users.find(v => v.jid == jid).afkReason : '-'}`, global.db.users.find(v => v.jid == jid).afkObj)
             global.db.users.find(v => v.jid == jid).afk = -1
             global.db.users.find(v => v.jid == jid).afkReason = ''
@@ -95,7 +113,7 @@ client.on('presence.update', update => {
 
 client.on('group.add', async ctx => {
    const sock = client.sock
-   const text = `+tag found his way into +grup./n/nEvil Bot.`
+   const text = `Thanks +tag for joining into +grup group.`
    const groupSet = global.db.groups.find(v => v.jid == ctx.jid)
    try {
       var pic = await Func.fetchBuffer(await sock.profilePictureUrl(ctx.member, 'image'))
@@ -103,10 +121,10 @@ client.on('group.add', async ctx => {
       var pic = await Func.fetchBuffer(await sock.profilePictureUrl(ctx.jid, 'image'))
    }
 
-   /* localonly to remove new member when the number not from kenya */
+   /* localonly to remove new member when the number not from indonesia */
    if (groupSet && groupSet.localonly) {
       if (global.db.users.some(v => v.jid == ctx.member) && !global.db.users.find(v => v.jid == ctx.member).whitelist && !ctx.member.startsWith('254') || !ctx.member.startsWith('254')) {
-         sock.reply(ctx.jid, Func.texted('bold', `Sorry @${ctx.member.split`@`[0]}, this group is only for kenyan people and you will removed automatically.`))
+         sock.reply(ctx.jid, Func.texted('bold', `Sorry @${ctx.member.split`@`[0]}, this group is only for indonesian people and you will removed automatically.`))
          sock.updateBlockStatus(member, 'block')
          return await Func.delay(2000).then(() => sock.groupParticipantsUpdate(ctx.jid, [ctx.member], 'remove'))
       }
@@ -137,6 +155,10 @@ client.on('group.remove', async ctx => {
    })
 })
 
+client.on('caller', ctx => {
+	if (typeof ctx === 'boolean') return
+	client.sock.updateBlockStatus(ctx.jid, 'block')
+})
+
 // client.on('group.promote', ctx => console.log(ctx))
 // client.on('group.demote', ctx => console.log(ctx))
-// client.on('caller', ctx => console.log(ctx))
