@@ -10,7 +10,7 @@ exports.run = {
       Func
    }) => {
       try {
-         if (!args || !args[0]) return client.reply(m.chat, Func.example(isPrefix, command, 'mujahideen_maha'), m)
+         if (!args || !args[0]) return client.reply(m.chat, Func.example(isPrefix, command, 'hosico_cat'), m)
          client.sendReact(m.chat, '🕒', m.key)
          const json = await Api.neoxr('/igstalk', {
          	username: args[0]
