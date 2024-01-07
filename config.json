@@ -1,6 +1,6 @@
 {
-   "owner": "254796032440",
-   "owner_name": "Mujahideen",
+   "owner": "254735306047",
+   "owner_name": "Kysage",
    "database": "data",
    "limit": 15,
    "ram_limit": "900mb",
@@ -13,7 +13,7 @@
    "evaluate_chars":  ["=>", "~>", "<", ">", "$"],
    "pairing": {
       "state": false,
-      "number": 254706069585
+      "number": 254796032440
    },
    "replit_url": ""
 }
