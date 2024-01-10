@@ -1,6 +1,6 @@
 {
-   "owner": "254735306047",
-   "owner_name": "Kysage",
+   "owner": "254102074064",
+   "owner_name": "ꪶ ࣩࣩࣩࣩ᪵᪵᪵᪵᪵᪵᪵᪵ࣧࣧ𝐝𝐫𝐞𝐱ꪶ ࣩࣧࣧ",
    "database": "data",
    "limit": 15,
    "ram_limit": "900mb",
@@ -13,7 +13,7 @@
    "evaluate_chars":  ["=>", "~>", "<", ">", "$"],
    "pairing": {
       "state": false,
-      "number": 254796032440
+      "number": 254101793978
    },
    "replit_url": ""
 }
